@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -21,6 +22,7 @@ import static com.example.demo.security.ApplicationUserRole.*;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
@@ -38,11 +40,11 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/","index", "/css/","/js/*").permitAll()
-                .antMatchers("/api/**").hasRole(STUDENT.name())
-                .antMatchers(HttpMethod.DELETE,"/management/api/**").hasAuthority(COURSE_WRITE.name())
-                .antMatchers(HttpMethod.POST,"/management/api/**").hasAuthority(COURSE_WRITE.name())
-                .antMatchers(HttpMethod.PUT,"/management/api/**").hasAuthority(COURSE_WRITE.name())
-                .antMatchers(HttpMethod.GET,"/management/api/**").hasAnyRole(ADMIN.name(), ADMINTRAINEE.name())
+//                .antMatchers("/api/**").hasRole(STUDENT.name())
+//                .antMatchers(HttpMethod.DELETE,"/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
+//                .antMatchers(HttpMethod.POST,"/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
+//                .antMatchers(HttpMethod.PUT,"/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
+//                .antMatchers(HttpMethod.GET,"/management/api/**").hasAnyRole(ADMIN.name(), ADMINTRAINEE.name())
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -55,19 +57,23 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         UserDetails anna = User.builder()
                 .username("anna")
                 .password(passwordEncoder.encode("0000"))
-                .roles(STUDENT.name())
+                .authorities(STUDENT.getGrantedAuthorities())
+//                .roles(STUDENT.name())
                 .build();
 
+        System.out.println(anna.getAuthorities());
         UserDetails linda = User.builder()
                 .username("linda")
                 .password(passwordEncoder.encode("0000"))
-                .roles(ADMIN.name())
+                .authorities(ADMIN.getGrantedAuthorities())
+//                .roles(ADMIN.name())
                 .build();
 
         UserDetails tom = User.builder()
                 .username("tom")
                 .password(passwordEncoder.encode("0000"))
-                .roles(ADMINTRAINEE.name())
+                .authorities(ADMINTRAINEE.getGrantedAuthorities())
+//                .roles(ADMINTRAINEE.name())
                 .build();
 
         return new InMemoryUserDetailsManager(anna,linda,tom);
