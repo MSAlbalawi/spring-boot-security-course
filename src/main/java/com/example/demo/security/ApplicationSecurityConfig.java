@@ -52,12 +52,15 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 .and()
                 .formLogin()
-                .loginPage("/login").permitAll()
-                .defaultSuccessUrl("/courses",true)
+                    .loginPage("/login").permitAll()
+                    .defaultSuccessUrl("/courses",true)
+                    .passwordParameter("password") // binding with html
+                    .usernameParameter("username") // binding with html
                 .and()
                 .rememberMe()
                     .tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(21))
                     .key("putYourContenetToBe") // this key to generate MD5 key
+                    .rememberMeParameter("remember-me") // // binding with html
                 .and()
                 .logout()
                     .logoutUrl("/logout") // by default is "/logout"
